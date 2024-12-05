@@ -1,6 +1,5 @@
 package service;
 import model.Epic;
-import model.Status;
 import model.SubTask;
 import model.Task;
 import java.util.ArrayList;
@@ -154,7 +153,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeTask(int id) {}
+    public void removeTask(int id) {
+
+    }
 
     @Override
     public Task getTask(int id) {
