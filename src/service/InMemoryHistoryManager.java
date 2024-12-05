@@ -10,6 +10,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private final Map<Integer, Node<Task>> nodeMap = new HashMap<>();
     private Node<Task> head;
     private Node<Task> tail;
+
     private static class Node<T> {
         T item;
         Node<T> next;
@@ -48,7 +49,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void clear() {}
+    public void clear() {
+
+    }
 
     private void linkLast(Task task) {
         final Node<Task> oldTail = tail;
