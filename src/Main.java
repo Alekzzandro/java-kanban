@@ -27,7 +27,7 @@ public class Main {
         taskManager.updateSubTask(subTask1);
         System.out.println("Epic Status after updating subtask 1: " + taskManager.getEpicById(epic1.getId()).getStatus());
 
-        printHistory(taskManager);
+        printHistory(taskManager);//25+
 
         Task fetchedTask = taskManager.getTaskById(task1.getId());
         System.out.println("Fetched Task: " + fetchedTask);
