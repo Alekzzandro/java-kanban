@@ -48,11 +48,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         return history;
     }
 
-    @Override
-    public void clear() {
-
-    }
-
     private void linkLast(Task task) {
         final Node<Task> oldTail = tail;
         final Node<Task> newNode = new Node<>(oldTail, task, null);
@@ -71,18 +66,20 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         if (prev == null) {
             head = next;
+            if (head != null) {
+                head.prev = null;
+            }
         } else {
             prev.next = next;
-            node.prev = null;
         }
 
         if (next == null) {
             tail = prev;
+            if (tail != null) {
+                tail.next = null;
+            }
         } else {
             next.prev = prev;
-            node.next = null;
         }
-
-        node.item = null;
     }
 }

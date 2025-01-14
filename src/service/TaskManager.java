@@ -16,6 +16,8 @@ public interface TaskManager {
 
     boolean updateTask(Task task);
 
+    void updateEpicStatus(Epic epic);
+
     boolean updateEpic(Epic epic);
 
     boolean updateSubTask(SubTask subTask);
@@ -45,12 +47,6 @@ public interface TaskManager {
     void deleteAllEpics();
 
     void deleteAllSubTasks();
-
-    void addTask(Task task);
-
-    void removeTask(int id);
-
-    Task getTask(int id);
 
     List<Task> getAllTasks();
 
