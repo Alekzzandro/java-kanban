@@ -1,8 +1,10 @@
 package service;
+
 import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -158,7 +160,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        for(Integer taskId : tasks.keySet()) {
+        for (Integer taskId : tasks.keySet()) {
             historyManager.remove(taskId);
         }
         tasks.clear();
@@ -166,7 +168,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
-        for (Integer epicId : epics.keySet()){
+        for (Integer epicId : epics.keySet()) {
             historyManager.remove(epicId);
         }
         subTasks.clear();
@@ -175,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubTasks() {
-        for(Integer taskId : subTasks.keySet()) {
+        for (Integer taskId : subTasks.keySet()) {
             historyManager.remove(taskId);
         }
         subTasks.clear();
