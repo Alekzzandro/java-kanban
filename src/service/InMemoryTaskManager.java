@@ -46,8 +46,7 @@ public class InMemoryTaskManager implements TaskManager {
         return true;
     }
 
-    @Override
-    public void updateEpicStatus(Epic epic) {
+    private void updateEpicStatus(Epic epic) {
         int countNew = 0;
         int countDone = 0;
 
@@ -186,10 +185,5 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
-    }
-
-    @Override
-    public List<Task> getAllTasks() {
-        return List.of();
     }
 }
