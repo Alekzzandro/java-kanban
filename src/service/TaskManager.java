@@ -46,13 +46,5 @@ public interface TaskManager {
 
     void deleteAllSubTasks();
 
-    void addTask(Task task);
-
-    void removeTask(int id);
-
-    Task getTask(int id);
-
-    List<Task> getAllTasks();
-
     List<Task> getHistory();
 }

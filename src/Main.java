@@ -7,12 +7,13 @@ import service.TaskManager;
 
 public class Main {
     public static void main(String[] args) {
+        System.out.println("Поехали!");
         TaskManager taskManager = Managers.getDefaultTaskManager();
 
         Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW);
         Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW);
         taskManager.createTask(task1);
-        taskManager.createTask(task2); //
+        taskManager.createTask(task2);
 
         Epic epic1 = new Epic(3, "Epic 1", "Description Epic 1");
         taskManager.createEpic(epic1);
@@ -27,7 +28,7 @@ public class Main {
         taskManager.updateSubTask(subTask1);
         System.out.println("Epic Status after updating subtask 1: " + taskManager.getEpicById(epic1.getId()).getStatus());
 
-        printHistory(taskManager);//25+
+        printHistory(taskManager);
 
         Task fetchedTask = taskManager.getTaskById(task1.getId());
         System.out.println("Fetched Task: " + fetchedTask);
