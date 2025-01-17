@@ -1,5 +1,6 @@
 package service;
 
+import exception.ManagerLoadFileException;
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -19,21 +20,21 @@ public class InMemoryTaskManager implements TaskManager {
     private int nextId = 1;
 
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(Task task) throws ManagerLoadFileException {
         task.setId(nextId++);
         tasks.put(task.getId(), task);
         return task;
     }
 
     @Override
-    public Epic createEpic(Epic epic) {
+    public Epic createEpic(Epic epic) throws ManagerLoadFileException {
         epic.setId(nextId++);
         epics.put(epic.getId(), epic);
         return epic;
     }
 
     @Override
-    public SubTask createSubTask(SubTask subTask) {
+    public SubTask createSubTask(SubTask subTask) throws ManagerLoadFileException {
         subTask.setId(nextId++);
         subTasks.put(subTask.getId(), subTask);
         return subTask;
@@ -123,13 +124,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTask(int taskId) {
+    public void deleteTask(int taskId) throws ManagerLoadFileException {
         tasks.remove(taskId);
         historyManager.remove(taskId);
     }
 
     @Override
-    public void deleteEpic(int epicId) {
+    public void deleteEpic(int epicId) throws ManagerLoadFileException {
         if (epics.containsKey(epicId)) {
             List<Integer> subTaskIds = epics.get(epicId).getSubTaskIds();
             for (Integer subtaskId : subTaskIds) {
@@ -144,7 +145,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteSubTask(int subTaskId) {
+    public void deleteSubTask(int subTaskId) throws ManagerLoadFileException {
         SubTask subtask = subTasks.get(subTaskId);
         if (subtask != null) {
             int epicId = subtask.getEpicId();
@@ -153,7 +154,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(subTaskId);
             updateEpicStatus(epics.get(epicId));
         } else {
-            System.out.println("Сабтаска с ID " + subTaskId + " не существует");
+            System.out.println("SubTask with ID " + subTaskId + " not found");
         }
     }
 

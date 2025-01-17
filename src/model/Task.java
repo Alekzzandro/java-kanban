@@ -7,12 +7,14 @@ public class Task {
     private String title;
     private String description;
     private Status status;
+    private TaskTypes taskType;
 
-    public Task(int id, String title, String description, Status status) {
+    public Task(int id, String title, String description, Status status, TaskTypes taskType) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
+        this.taskType = taskType;
     }
 
     public int getId() {
@@ -39,6 +41,10 @@ public class Task {
         this.status = status;
     }
 
+    public TaskTypes getTaskType() {
+        return taskType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,12 +53,13 @@ public class Task {
         return id == task.id &&
                 title.equals(task.title) &&
                 description.equals(task.description) &&
-                status == task.status;
+                status == task.status &&
+                taskType == task.taskType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, status);
+        return Objects.hash(id, title, description, status, taskType);
     }
 
     @Override
@@ -62,6 +69,7 @@ public class Task {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
+                ", taskType=" + taskType +
                 '}';
     }
 }
