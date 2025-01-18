@@ -7,12 +7,17 @@ public class Epic extends Task {
     private List<SubTask> subTasks = new ArrayList<>();
     private List<Integer> subTaskIds = new ArrayList<>();
 
-    public Epic(int id, String title, String description, Status status, TaskTypes taskType) {
-        super(id, title, description, status, taskType);
+    public Epic(int id, String title, String description, Status status, TaskTypes epic) {
+        super(id, title, description, status, TaskTypes.EPIC);
+    }
+
+    @Override
+    public TaskTypes getTaskType() {
+        return TaskTypes.EPIC;
     }
 
     public void addSubTask(SubTask subTask) {
-        if (subTask.getEpicId() == this.getId()) {
+        if (this.getId() == subTask.getId()) {
             throw new IllegalArgumentException("Эпик не может добавлять себя как подзадачу");
         }
         subTasks.add(subTask);
@@ -27,6 +32,10 @@ public class Epic extends Task {
     public void clearSubTasks() {
         subTaskIds.clear();
         subTasks.clear();
+    }
+
+    public List<Integer> getSubTasks() {
+        return subTaskIds; // Возвращаем список подзадач
     }
 
     public List<Integer> getSubTaskIds() {

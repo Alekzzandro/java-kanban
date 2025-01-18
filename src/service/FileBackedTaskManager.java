@@ -1,9 +1,10 @@
 package service;
 
+import exception.ManagerLoadFileException;
 import model.*;
-import exception.*;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
@@ -63,7 +64,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 case TASK:
                     return new Task(id, title, description, status, type);
                 case EPIC:
-                    return new Epic(id, title, description, status, type);
+                    return new Epic(id, title, description, status, TaskTypes.EPIC);
                 case SUBTASK:
                     int epicId = Integer.parseInt(fields[5]);
                     return new SubTask(id, title, description, epicId, status, type);
@@ -131,6 +132,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void deleteSubTask(int subTaskId) throws ManagerLoadFileException {
         super.deleteSubTask(subTaskId);
         save();
+    }
+
+    @Override
+    protected void addTaskToStorage(Task task) throws ManagerLoadFileException {
+        if (task instanceof SubTask) {
+            createSubTask((SubTask) task);
+        } else if (task instanceof Epic) {
+            createEpic((Epic) task);
+        } else {
+            createTask(task);
+        }
     }
 
     public static FileBackedTaskManager loadFromFile(Path path) throws ManagerLoadFileException {

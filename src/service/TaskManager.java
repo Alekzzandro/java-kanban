@@ -1,6 +1,5 @@
 package service;
 
-import exception.ManagerLoadFileException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
@@ -8,12 +7,11 @@ import model.Task;
 import java.util.List;
 
 public interface TaskManager {
+    Task createTask(Task task);
 
-    Task createTask(Task task) throws ManagerLoadFileException;
+    Epic createEpic(Epic epic);
 
-    Epic createEpic(Epic epic) throws ManagerLoadFileException;
-
-    SubTask createSubTask(SubTask subTask) throws ManagerLoadFileException;
+    SubTask createSubTask(SubTask subTask);
 
     boolean updateTask(Task task);
 
@@ -35,11 +33,11 @@ public interface TaskManager {
 
     List<SubTask> getSubTasksByEpic(int epicId);
 
-    void deleteTask(int taskId) throws ManagerLoadFileException;
+    void deleteTask(int taskId);
 
-    void deleteEpic(int epicId) throws ManagerLoadFileException;
+    void deleteEpic(int epicId);
 
-    void deleteSubTask(int subTaskId) throws ManagerLoadFileException;
+    void deleteSubTask(int subTaskId);
 
     void deleteAllTasks();
 

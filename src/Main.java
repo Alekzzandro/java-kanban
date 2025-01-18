@@ -1,8 +1,4 @@
-import model.Epic;
-import model.Status;
-import model.SubTask;
-import model.Task;
-import model.TaskTypes;
+import model.*;
 import service.Managers;
 import service.TaskManager;
 
@@ -52,7 +48,6 @@ public class Main {
         printHistory(taskManager);
 
         subTask1.setStatus(Status.DONE);
-
         taskManager.updateSubTask(subTask1);
 
         System.out.println("Epic Status after updating subtask 1: " + taskManager.getEpicById(epic1.getId()).getStatus());

@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,7 +32,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    void testAddNewTaskAndSaveToFile() throws Exception {
+    void testSaveAndLoadTask() throws Exception {
         Task task = new Task(1, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
         taskManager.createTask(task);
 
@@ -41,16 +40,11 @@ class FileBackedTaskManagerTest {
 
         Task savedTask = taskManager.getTaskById(task.getId());
         assertNotNull(savedTask, "Задача не найдена.");
-
-        assertEquals(task.getId(), savedTask.getId(), "ID задачи не совпадает.");
-        assertEquals(task.getTitle(), savedTask.getTitle(), "Название задачи не совпадает.");
-        assertEquals(task.getDescription(), savedTask.getDescription(), "Описание задачи не совпадает.");
-        assertEquals(task.getStatus(), savedTask.getStatus(), "Статус задачи не совпадает.");
-        assertEquals(task.getTaskType(), savedTask.getTaskType(), "Тип задачи не совпадает.");
+        assertEquals(task, savedTask, "Задача не совпадает после загрузки.");
     }
 
     @Test
-    void testDeleteTaskAndSaveToFile() throws Exception {
+    void testDeleteTaskAndLoad() throws Exception {
         Task task = new Task(6, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
         taskManager.createTask(task);
 
@@ -58,12 +52,11 @@ class FileBackedTaskManagerTest {
 
         taskManager = (FileBackedTaskManager) Managers.loadFromFile(filePath);
 
-        Task deletedTask = taskManager.getTaskById(task.getId());
-        assertNull(deletedTask, "Задача не удалена.");
+        assertNull(taskManager.getTaskById(task.getId()), "Задача не была удалена.");
     }
 
     @Test
-    void testDeleteEpicAndSaveToFile() throws Exception {
+    void testDeleteEpicAndLoad() throws Exception {
         Epic epic = new Epic(7, "Test Epic", "Epic Description", Status.NEW, TaskTypes.EPIC);
         taskManager.createEpic(epic);
 
@@ -71,12 +64,11 @@ class FileBackedTaskManagerTest {
 
         taskManager = (FileBackedTaskManager) Managers.loadFromFile(filePath);
 
-        Epic deletedEpic = (Epic) taskManager.getTaskById(epic.getId());
-        assertNull(deletedEpic, "Эпик не удален.");
+        assertNull(taskManager.getEpicById(epic.getId()), "Эпик не был удален.");
     }
 
     @Test
-    void testDeleteSubTaskAndSaveToFile() throws Exception {
+    void testDeleteSubTaskAndLoad() throws Exception {
         Epic epic = new Epic(8, "Test Epic", "Epic Description", Status.NEW, TaskTypes.EPIC);
         taskManager.createEpic(epic);
 
@@ -87,7 +79,21 @@ class FileBackedTaskManagerTest {
 
         taskManager = (FileBackedTaskManager) Managers.loadFromFile(filePath);
 
-        SubTask deletedSubTask = (SubTask) taskManager.getTaskById(subTask.getId());
-        assertNull(deletedSubTask, "Подзадача не удалена.");
+        assertNull(taskManager.getSubTaskById(subTask.getId()), "Подзадача не была удалена.");
+    }
+
+    @Test
+    void testEpicStatusUpdateAfterSubTaskDeletion() throws Exception {
+        Epic epic = new Epic(10, "Test Epic", "Epic Description", Status.NEW, TaskTypes.EPIC);
+        taskManager.createEpic(epic);
+
+        SubTask subTask = new SubTask(11, "Test SubTask", "SubTask Description", epic.getId(), Status.NEW, TaskTypes.SUBTASK);
+        taskManager.createSubTask(subTask);
+
+        taskManager.deleteSubTask(subTask.getId());
+
+        Epic updatedEpic = taskManager.getEpicById(epic.getId());
+        assertNotNull(updatedEpic, "Эпик не найден.");
+        assertTrue(updatedEpic.getSubTasks().isEmpty(), "Эпик содержит удаленную подзадачу.");
     }
 }

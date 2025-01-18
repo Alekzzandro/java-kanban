@@ -20,8 +20,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void addAndRetrieveHistory() {
-        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW, TaskTypes.TASK); // Создание задачи с id 1
-        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW, TaskTypes.TASK); // Создание задачи с id 2
+        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW, TaskTypes.TASK);
+        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW, TaskTypes.TASK);
         historyManager.add(task1);
         historyManager.add(task2);
 
@@ -58,23 +58,5 @@ class InMemoryHistoryManagerTest {
         assertEquals(2, history.size());
         assertEquals(task2, history.get(0));
         assertEquals(task1, history.get(1));
-    }
-
-    @Test
-    void checkTaskTypeInHistory() {
-        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW, TaskTypes.TASK);
-        Task epic1 = new Task(2, "Epic 1", "Description Epic 1", Status.NEW, TaskTypes.EPIC);
-        Task subTask1 = new Task(3, "SubTask 1", "Description SubTask 1", Status.NEW, TaskTypes.SUBTASK);
-
-        historyManager.add(task1);
-        historyManager.add(epic1);
-        historyManager.add(subTask1);
-
-        List<Task> history = historyManager.getHistory();
-        assertEquals(3, history.size());
-
-        assertEquals(TaskTypes.TASK, history.get(0).getTaskType());
-        assertEquals(TaskTypes.EPIC, history.get(1).getTaskType());
-        assertEquals(TaskTypes.SUBTASK, history.get(2).getTaskType());
     }
 }

@@ -17,7 +17,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
     private final HistoryManager historyManager = new InMemoryHistoryManager();
-    private int nextId = 1;
+    protected int nextId = 1;
 
     @Override
     public Task createTask(Task task) throws ManagerLoadFileException {
@@ -186,5 +186,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    protected void addTaskToStorage(Task task) {
+        tasks.put(task.getId(), task);
+    }
+
+    protected void addEpicToStorage(Epic epic) {
+        epics.put(epic.getId(), epic);
+    }
+
+    protected void addSubTaskToStorage(SubTask subTask) {
+        subTasks.put(subTask.getId(), subTask);
+    }
+
+    protected void setNextId(int nextId) {
+        this.nextId = nextId;
     }
 }
