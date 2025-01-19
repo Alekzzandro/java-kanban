@@ -1,10 +1,12 @@
 import model.Status;
 import model.Task;
-import model.TaskTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.HistoryManager;
 import service.InMemoryHistoryManager;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,8 +20,9 @@ class TaskTest {
 
     @Test
     void testAddToHistory() {
-        Task task = new Task(1, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
+        Task task = new Task(1, "Test Task", "Description", Status.NEW, Duration.ofMinutes(30), LocalDateTime.now());
         historyManager.add(task);
+
         assertEquals(1, historyManager.getHistory().size(), "История должна содержать одну задачу.");
     }
 }
