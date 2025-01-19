@@ -6,13 +6,10 @@ import model.Status;
 import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class InMemoryTaskManager implements TaskManager {
-
+public class InMemoryTaskManager extends TaskManagerImplement implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
@@ -21,6 +18,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task createTask(Task task) throws ManagerLoadFileException {
+        validateTaskOverlap(task);
         task.setId(nextId++);
         tasks.put(task.getId(), task);
         return task;
@@ -35,6 +33,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask createSubTask(SubTask subTask) throws ManagerLoadFileException {
+        validateTaskOverlap(subTask);
         subTask.setId(nextId++);
         subTasks.put(subTask.getId(), subTask);
         Epic epic = epics.get(subTask.getEpicId());
@@ -45,9 +44,32 @@ public class InMemoryTaskManager implements TaskManager {
         return subTask;
     }
 
+    private void validateTaskOverlap(Task task) {
+        for (Task existingTask : getAllTasks()) {
+            if (existingTask == task) continue; // Не проверяем пересечение с самой собой
+            if (task instanceof SubTask && existingTask instanceof Epic) {
+                SubTask subTask = (SubTask) task;
+                Epic epic = (Epic) existingTask;
+                if (subTask.getEpicId() == epic.getId()) continue; // Не проверяем пересечение с родительским эпиком
+            }
+            System.out.println("Checking overlap between: " + task + " and " + existingTask);
+            if (Task.isOverlap(task, existingTask)) {
+                throw new IllegalArgumentException("Task overlaps with existing tasks");
+            }
+        }
+    }
+
+    private List<Task> getAllTasks() {
+        List<Task> allTasks = new ArrayList<>(tasks.values());
+        allTasks.addAll(epics.values());
+        allTasks.addAll(subTasks.values());
+        return allTasks;
+    }
+
     @Override
     public boolean updateTask(Task task) {
         if (!tasks.containsKey(task.getId())) return false;
+        validateTaskOverlap(task);
         tasks.put(task.getId(), task);
         return true;
     }
@@ -55,7 +77,6 @@ public class InMemoryTaskManager implements TaskManager {
     private void updateEpicStatus(Epic epic) {
         int countNew = 0;
         int countDone = 0;
-
         for (int subtaskId : epic.getSubTaskIds()) {
             SubTask subtask = subTasks.get(subtaskId);
             if (subtask.getStatus() == Status.NEW) {
@@ -79,6 +100,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean updateSubTask(SubTask subTask) {
         if (!subTasks.containsKey(subTask.getId())) return false;
+        validateTaskOverlap(subTask);
         subTasks.put(subTask.getId(), subTask);
         Epic epic = epics.get(subTask.getEpicId());
         if (epic != null) {
@@ -123,13 +145,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<SubTask> getSubTasksByEpic(int epicId) {
-        List<SubTask> subTaskList = new ArrayList<>();
-        for (SubTask subTask : subTasks.values()) {
-            if (subTask.getEpicId() == epicId) {
-                subTaskList.add(subTask);
-            }
-        }
-        return subTaskList;
+        return subTasks.values().stream()
+                .filter(subTask -> subTask.getEpicId() == epicId)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -218,5 +236,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void setNextId(int nextId) {
         this.nextId = nextId;
+    }
+
+    public List<Task> getPrioritizedTasks() {
+        TreeSet<Task> sortedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        sortedTasks.addAll(getAllTasks());
+        return new ArrayList<>(sortedTasks);
     }
 }
