@@ -1,5 +1,6 @@
 package service;
 
+import exception.ManagerLoadFileException;
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -16,26 +17,31 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
     private final HistoryManager historyManager = new InMemoryHistoryManager();
-    private int nextId = 1;
+    protected int nextId = 1;
 
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(Task task) throws ManagerLoadFileException {
         task.setId(nextId++);
         tasks.put(task.getId(), task);
         return task;
     }
 
     @Override
-    public Epic createEpic(Epic epic) {
+    public Epic createEpic(Epic epic) throws ManagerLoadFileException {
         epic.setId(nextId++);
         epics.put(epic.getId(), epic);
         return epic;
     }
 
     @Override
-    public SubTask createSubTask(SubTask subTask) {
+    public SubTask createSubTask(SubTask subTask) throws ManagerLoadFileException {
         subTask.setId(nextId++);
         subTasks.put(subTask.getId(), subTask);
+        Epic epic = epics.get(subTask.getEpicId());
+        if (epic != null) {
+            epic.addSubTask(subTask.getId());
+            updateEpicStatus(epic);
+        }
         return subTask;
     }
 
@@ -74,6 +80,10 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean updateSubTask(SubTask subTask) {
         if (!subTasks.containsKey(subTask.getId())) return false;
         subTasks.put(subTask.getId(), subTask);
+        Epic epic = epics.get(subTask.getEpicId());
+        if (epic != null) {
+            updateEpicStatus(epic);
+        }
         return true;
     }
 
@@ -123,13 +133,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTask(int taskId) {
+    public void deleteTask(int taskId) throws ManagerLoadFileException {
         tasks.remove(taskId);
         historyManager.remove(taskId);
     }
 
     @Override
-    public void deleteEpic(int epicId) {
+    public void deleteEpic(int epicId) throws ManagerLoadFileException {
         if (epics.containsKey(epicId)) {
             List<Integer> subTaskIds = epics.get(epicId).getSubTaskIds();
             for (Integer subtaskId : subTaskIds) {
@@ -144,7 +154,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteSubTask(int subTaskId) {
+    public void deleteSubTask(int subTaskId) throws ManagerLoadFileException {
         SubTask subtask = subTasks.get(subTaskId);
         if (subtask != null) {
             int epicId = subtask.getEpicId();
@@ -153,7 +163,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(subTaskId);
             updateEpicStatus(epics.get(epicId));
         } else {
-            System.out.println("Сабтаска с ID " + subTaskId + " не существует");
+            System.out.println("SubTask with ID " + subTaskId + " not found");
         }
     }
 
@@ -185,5 +195,28 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    protected void addTaskToStorage(Task task) {
+        tasks.put(task.getId(), task);
+    }
+
+    protected void addEpicToStorage(Epic epic) {
+        epics.put(epic.getId(), epic);
+    }
+
+    protected void addSubTaskToStorage(SubTask subTask) {
+        subTasks.put(subTask.getId(), subTask);
+        Epic epic = epics.get(subTask.getEpicId());
+        if (epic != null) {
+            epic.addSubTask(subTask.getId());
+            updateEpicStatus(epic);
+        } else {
+            System.out.println("Epic with ID " + subTask.getEpicId() + " not found for SubTask with ID " + subTask.getId());
+        }
+    }
+
+    protected void setNextId(int nextId) {
+        this.nextId = nextId;
     }
 }

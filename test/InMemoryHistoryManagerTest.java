@@ -1,10 +1,13 @@
 import model.Status;
 import model.Task;
+import model.TaskTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.HistoryManager;
 import service.InMemoryHistoryManager;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
@@ -17,9 +20,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void addAndRetrieveHistory() {
-        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW); // Создание задачи с id 1
-        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW); // Создание задачи с id 2
-
+        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW, TaskTypes.TASK);
+        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW, TaskTypes.TASK);
         historyManager.add(task1);
         historyManager.add(task2);
 
@@ -31,11 +33,11 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void removeTaskFromHistory() {
-        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW);
-        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW);
-
+        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW, TaskTypes.TASK);
+        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW, TaskTypes.TASK);
         historyManager.add(task1);
         historyManager.add(task2);
+
         historyManager.remove(1);
 
         List<Task> history = historyManager.getHistory();
@@ -45,11 +47,11 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void reAddTaskUpdatesPosition() {
-        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW);
-        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW);
-
+        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW, TaskTypes.TASK);
+        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW, TaskTypes.TASK);
         historyManager.add(task1);
         historyManager.add(task2);
+
         historyManager.add(task1);
 
         List<Task> history = historyManager.getHistory();

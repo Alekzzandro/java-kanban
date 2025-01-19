@@ -1,31 +1,35 @@
 package model;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private List<SubTask> subTasks = new ArrayList<>(); // Список подзадач
-    private List<Integer> subTaskIds = new ArrayList<>(); // Список ID подзадач
+    private final List<Integer> subTaskIds = new ArrayList<>();
 
-    public Epic(int id, String title, String description) {
-        super(id, title, description, Status.NEW);
+    public Epic(int id, String title, String description, Status status) {
+        super(id, title, description, status, TaskTypes.EPIC);
     }
 
-    public void addSubTask(SubTask subTask) {
-        if (subTask.getEpicId() == this.getId()) {
+    @Override
+    public TaskTypes getTaskType() {
+        return TaskTypes.EPIC;
+    }
+
+    public void addSubTask(int subTaskId) {
+        if (this.getId() == subTaskId) {
             throw new IllegalArgumentException("Эпик не может добавлять себя как подзадачу");
         }
-        subTasks.add(subTask);
-        subTaskIds.add(subTask.getId());
+        if (!subTaskIds.contains(subTaskId)) {
+            subTaskIds.add(subTaskId);
+        }
     }
 
     public void removeSubTask(int subTaskId) {
         subTaskIds.remove(Integer.valueOf(subTaskId));
-        subTasks.removeIf(subTask -> subTask.getId() == subTaskId);
     }
 
     public void clearSubTasks() {
         subTaskIds.clear();
-        subTasks.clear();
     }
 
     public List<Integer> getSubTaskIds() {
