@@ -18,8 +18,9 @@ public class Main {
             return;
         }
 
-        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW, TaskTypes.TASK);
-        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW, TaskTypes.TASK);
+        // Создание задач
+        Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW);
+        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW);
 
         try {
             taskManager.createTask(task1);
@@ -28,7 +29,7 @@ public class Main {
             System.err.println("Ошибка при создании задачи: " + e.getMessage());
         }
 
-        Epic epic1 = new Epic(3, "Epic 1", "Description Epic 1", Status.NEW, TaskTypes.EPIC);
+        Epic epic1 = new Epic(3, "Epic 1", "Description Epic 1", Status.NEW);
 
         try {
             taskManager.createEpic(epic1);
@@ -36,7 +37,7 @@ public class Main {
             System.err.println("Ошибка при создании эпика: " + e.getMessage());
         }
 
-        SubTask subTask1 = new SubTask(4, "SubTask 1", "Description SubTask 1", epic1.getId(), Status.NEW, TaskTypes.SUBTASK);
+        SubTask subTask1 = new SubTask(4, "SubTask 1", "Description SubTask 1", epic1.getId(), Status.NEW);
 
         try {
             taskManager.createSubTask(subTask1);

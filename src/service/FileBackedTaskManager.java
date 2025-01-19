@@ -62,12 +62,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String description = fields[4];
             switch (type) {
                 case TASK:
-                    return new Task(id, title, description, status, type);
+                    return new Task(id, title, description, status);
                 case EPIC:
-                    return new Epic(id, title, description, status, TaskTypes.EPIC);
+                    return new Epic(id, title, description, status);
                 case SUBTASK:
                     int epicId = Integer.parseInt(fields[5]);
-                    return new SubTask(id, title, description, epicId, status, type);
+                    return new SubTask(id, title, description, epicId, status);
                 default:
                     throw new IllegalArgumentException("Неизвестный тип задачи: " + type);
             }
@@ -79,17 +79,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private void load() throws ManagerLoadFileException {
         try {
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            int maxId = 0;
+
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 Task task = taskFromString(line);
-                if (task.getTaskType() == TaskTypes.SUBTASK) {
-                    createSubTask((SubTask) task);
-                } else if (task.getTaskType() == TaskTypes.EPIC) {
-                    createEpic((Epic) task);
+                if (task instanceof SubTask) {
+                    addSubTaskToStorage((SubTask) task);
+                } else if (task instanceof Epic) {
+                    addEpicToStorage((Epic) task);
                 } else {
-                    createTask(task);
+                    addTaskToStorage(task);
                 }
+                maxId = Math.max(maxId, task.getId());
             }
+            setNextId(maxId + 1);
         } catch (IOException e) {
             throw new ManagerLoadFileException("Ошибка загрузки данных из файла", e);
         }
@@ -134,24 +138,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    @Override
-    protected void addTaskToStorage(Task task) throws ManagerLoadFileException {
-        if (task instanceof SubTask) {
-            createSubTask((SubTask) task);
-        } else if (task instanceof Epic) {
-            createEpic((Epic) task);
-        } else {
-            createTask(task);
-        }
-    }
-
     public static FileBackedTaskManager loadFromFile(Path path) throws ManagerLoadFileException {
-        FileBackedTaskManager manager;
         try {
-            manager = new FileBackedTaskManager(path);
+            return new FileBackedTaskManager(path);
         } catch (IOException | ManagerLoadFileException e) {
             throw new ManagerLoadFileException("Ошибка загрузки данных из файла", e);
         }
-        return manager;
     }
 }

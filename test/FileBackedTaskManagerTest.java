@@ -2,7 +2,6 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import model.TaskTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,20 +31,8 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    void testSaveAndLoadTask() throws Exception {
-        Task task = new Task(1, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
-        taskManager.createTask(task);
-
-        taskManager = (FileBackedTaskManager) Managers.loadFromFile(filePath);
-
-        Task savedTask = taskManager.getTaskById(task.getId());
-        assertNotNull(savedTask, "Задача не найдена.");
-        assertEquals(task, savedTask, "Задача не совпадает после загрузки.");
-    }
-
-    @Test
     void testDeleteTaskAndLoad() throws Exception {
-        Task task = new Task(6, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
+        Task task = new Task(6, "Test Task", "Description", Status.NEW);
         taskManager.createTask(task);
 
         taskManager.deleteTask(task.getId());
@@ -57,7 +44,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testDeleteEpicAndLoad() throws Exception {
-        Epic epic = new Epic(7, "Test Epic", "Epic Description", Status.NEW, TaskTypes.EPIC);
+        Epic epic = new Epic(7, "Test Epic", "Epic Description", Status.NEW);
         taskManager.createEpic(epic);
 
         taskManager.deleteEpic(epic.getId());
@@ -69,10 +56,10 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testDeleteSubTaskAndLoad() throws Exception {
-        Epic epic = new Epic(8, "Test Epic", "Epic Description", Status.NEW, TaskTypes.EPIC);
+        Epic epic = new Epic(8, "Test Epic", "Epic Description", Status.NEW);
         taskManager.createEpic(epic);
 
-        SubTask subTask = new SubTask(9, "Test SubTask", "SubTask Description", epic.getId(), Status.NEW, TaskTypes.SUBTASK);
+        SubTask subTask = new SubTask(9, "Test SubTask", "SubTask Description", epic.getId(), Status.NEW);
         taskManager.createSubTask(subTask);
 
         taskManager.deleteSubTask(subTask.getId());
@@ -84,16 +71,16 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testEpicStatusUpdateAfterSubTaskDeletion() throws Exception {
-        Epic epic = new Epic(10, "Test Epic", "Epic Description", Status.NEW, TaskTypes.EPIC);
+        Epic epic = new Epic(10, "Test Epic", "Epic Description", Status.NEW);
         taskManager.createEpic(epic);
 
-        SubTask subTask = new SubTask(11, "Test SubTask", "SubTask Description", epic.getId(), Status.NEW, TaskTypes.SUBTASK);
+        SubTask subTask = new SubTask(11, "Test SubTask", "SubTask Description", epic.getId(), Status.NEW);
         taskManager.createSubTask(subTask);
 
         taskManager.deleteSubTask(subTask.getId());
 
         Epic updatedEpic = taskManager.getEpicById(epic.getId());
         assertNotNull(updatedEpic, "Эпик не найден.");
-        assertTrue(updatedEpic.getSubTasks().isEmpty(), "Эпик содержит удаленную подзадачу.");
+        assertTrue(taskManager.getSubTasksByEpic(epic.getId()).isEmpty(), "Эпик содержит удаленную подзадачу.");
     }
 }

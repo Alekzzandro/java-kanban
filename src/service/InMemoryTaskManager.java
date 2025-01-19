@@ -37,6 +37,11 @@ public class InMemoryTaskManager implements TaskManager {
     public SubTask createSubTask(SubTask subTask) throws ManagerLoadFileException {
         subTask.setId(nextId++);
         subTasks.put(subTask.getId(), subTask);
+        Epic epic = epics.get(subTask.getEpicId());
+        if (epic != null) {
+            epic.addSubTask(subTask.getId());
+            updateEpicStatus(epic);
+        }
         return subTask;
     }
 
@@ -75,6 +80,10 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean updateSubTask(SubTask subTask) {
         if (!subTasks.containsKey(subTask.getId())) return false;
         subTasks.put(subTask.getId(), subTask);
+        Epic epic = epics.get(subTask.getEpicId());
+        if (epic != null) {
+            updateEpicStatus(epic);
+        }
         return true;
     }
 
@@ -198,6 +207,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void addSubTaskToStorage(SubTask subTask) {
         subTasks.put(subTask.getId(), subTask);
+        Epic epic = epics.get(subTask.getEpicId());
+        if (epic != null) {
+            epic.addSubTask(subTask.getId());
+            updateEpicStatus(epic);
+        } else {
+            System.out.println("Epic with ID " + subTask.getEpicId() + " not found for SubTask with ID " + subTask.getId());
+        }
     }
 
     protected void setNextId(int nextId) {
