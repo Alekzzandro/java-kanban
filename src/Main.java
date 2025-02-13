@@ -11,6 +11,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
         TaskManager taskManager = null;
+
         try {
             taskManager = Managers.getFileBackedTaskManager(Paths.get("tasks.csv"));
         } catch (IOException | ManagerLoadFileException e) {
@@ -19,8 +20,10 @@ public class Main {
         }
 
         LocalDateTime now = LocalDateTime.now();
+
         Task task1 = new Task(1, "Task 1", "Description 1", Status.NEW, Duration.ofMinutes(30), now);
-        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW, Duration.ofMinutes(45), now.plusMinutes(35)); // Смещаем на 35 минут
+        Task task2 = new Task(2, "Task 2", "Description 2", Status.NEW, Duration.ofMinutes(45), now.plusMinutes(35));
+
         try {
             taskManager.createTask(task1);
             taskManager.createTask(task2);
@@ -28,14 +31,16 @@ public class Main {
             System.err.println("Ошибка при создании задачи: " + e.getMessage());
         }
 
-        Epic epic1 = new Epic(3, "Epic 1", "Description Epic 1", Status.NEW, Duration.ofMinutes(60), now, taskManager);
+        Epic epic1 = new Epic(3, "Epic 1", "Description Epic 1", Status.NEW);
+
         try {
             taskManager.createEpic(epic1);
         } catch (ManagerLoadFileException e) {
             System.err.println("Ошибка при создании эпика: " + e.getMessage());
         }
 
-        SubTask subTask1 = new SubTask(4, "SubTask 1", "Description SubTask 1", Status.NEW, epic1.getId(), Duration.ofMinutes(30), now.plusMinutes(120)); // Смещаем на 120 минут
+        SubTask subTask1 = new SubTask(4, "SubTask 1", "Description SubTask 1", Status.NEW, epic1.getId());
+
         try {
             taskManager.createSubTask(subTask1);
         } catch (ManagerLoadFileException e) {
@@ -43,10 +48,12 @@ public class Main {
         }
 
         printAllTasks(taskManager);
+
         printHistory(taskManager);
 
         subTask1.setStatus(Status.DONE);
         taskManager.updateSubTask(subTask1);
+
         System.out.println("Epic Status after updating subtask 1: " + taskManager.getEpicById(epic1.getId()).getStatus());
 
         printHistory(taskManager);

@@ -10,7 +10,6 @@ public class Task {
     private Status status;
     protected Duration duration;
     protected LocalDateTime startTime;
-    protected LocalDateTime endTime;
 
     public Task(int id, String title, String description, Status status) {
         this.id = id;
@@ -23,17 +22,8 @@ public class Task {
         this(id, title, description, status);
         this.duration = duration;
         this.startTime = startTime;
-        this.endTime = calculateEndTime();
     }
 
-    LocalDateTime calculateEndTime() {
-        if (startTime != null && duration != null) {
-            return startTime.plus(duration);
-        }
-        return null;
-    }
-
-    // Геттеры и сеттеры
     public int getId() {
         return id;
     }
@@ -83,11 +73,14 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        return endTime;
+        if (startTime != null && duration != null) {
+            return startTime.plus(duration);
+        }
+        return null;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
+    public TaskTypes getTaskType() {
+        return TaskTypes.TASK;
     }
 
     @Override
@@ -99,15 +92,7 @@ public class Task {
                 ", status=" + status +
                 ", duration=" + duration +
                 ", startTime=" + startTime +
-                ", endTime=" + endTime +
+                ", endTime=" + getEndTime() +
                 '}';
-    }
-
-    // Метод для проверки пересечения задач
-    public static boolean isOverlap(Task task1, Task task2) {
-        if (task1.getStartTime() == null || task2.getStartTime() == null) return false;
-        LocalDateTime end1 = task1.getStartTime().plus(task1.getDuration());
-        LocalDateTime end2 = task2.getStartTime().plus(task2.getDuration());
-        return !(end1.isBefore(task2.getStartTime()) || task1.getStartTime().isAfter(end2));
     }
 }
