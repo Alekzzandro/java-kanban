@@ -1,6 +1,7 @@
 package service;
 
 import model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     private void removeNode(Node<Task> node) {
         final Node<Task> next = node.next;
         final Node<Task> prev = node.prev;
-
         if (prev == null) {
             head = next;
             if (head != null) {
@@ -72,7 +72,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             prev.next = next;
         }
-
         if (next == null) {
             tail = prev;
             if (tail != null) {

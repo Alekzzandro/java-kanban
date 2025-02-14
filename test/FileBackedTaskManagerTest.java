@@ -5,6 +5,7 @@ import model.Task;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import service.FileBackedTaskManager;
 import service.Managers;
 
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest {
+
     private FileBackedTaskManager taskManager;
     private final Path filePath = Paths.get("test_tasks.csv");
 
@@ -59,7 +61,7 @@ class FileBackedTaskManagerTest {
         Epic epic = new Epic(8, "Test Epic", "Epic Description", Status.NEW);
         taskManager.createEpic(epic);
 
-        SubTask subTask = new SubTask(9, "Test SubTask", "SubTask Description", epic.getId(), Status.NEW);
+        SubTask subTask = new SubTask(9, "Test SubTask", "SubTask Description", Status.NEW, epic.getId());
         taskManager.createSubTask(subTask);
 
         taskManager.deleteSubTask(subTask.getId());
@@ -74,13 +76,16 @@ class FileBackedTaskManagerTest {
         Epic epic = new Epic(10, "Test Epic", "Epic Description", Status.NEW);
         taskManager.createEpic(epic);
 
-        SubTask subTask = new SubTask(11, "Test SubTask", "SubTask Description", epic.getId(), Status.NEW);
+        SubTask subTask = new SubTask(11, "Test SubTask", "SubTask Description", Status.NEW, epic.getId());
         taskManager.createSubTask(subTask);
 
         taskManager.deleteSubTask(subTask.getId());
 
         Epic updatedEpic = taskManager.getEpicById(epic.getId());
         assertNotNull(updatedEpic, "Эпик не найден.");
+
         assertTrue(taskManager.getSubTasksByEpic(epic.getId()).isEmpty(), "Эпик содержит удаленную подзадачу.");
+
+        assertEquals(Status.NEW, updatedEpic.getStatus(), "Статус эпика должен быть NEW после удаления всех подзадач.");
     }
 }

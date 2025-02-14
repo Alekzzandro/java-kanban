@@ -1,43 +1,58 @@
 package model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private final List<Integer> subTaskIds = new ArrayList<>();
+    private List<Integer> subTaskIds = new ArrayList<>();
+    private LocalDateTime endTime;
 
     public Epic(int id, String title, String description, Status status) {
-        super(id, title, description, status, TaskTypes.EPIC);
+        super(id, title, description, status);
     }
 
-    @Override
-    public TaskTypes getTaskType() {
-        return TaskTypes.EPIC;
+    public void setSubTaskIds(List<Integer> subTaskIds) {
+        this.subTaskIds = subTaskIds;
     }
 
     public void addSubTask(int subTaskId) {
         if (this.getId() == subTaskId) {
             throw new IllegalArgumentException("Эпик не может добавлять себя как подзадачу");
         }
-        if (!subTaskIds.contains(subTaskId)) {
-            subTaskIds.add(subTaskId);
-        }
+        subTaskIds.add(subTaskId);
     }
 
     public void removeSubTask(int subTaskId) {
         subTaskIds.remove(Integer.valueOf(subTaskId));
     }
 
-    public void clearSubTasks() {
-        subTaskIds.clear();
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "id=" + getId() +
+                ", title='" + getTitle() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status=" + getStatus() +
+                ", duration=" + getDuration() +
+                ", startTime=" + getStartTime() +
+                ", endTime=" + getEndTime() +
+                '}';
+    }
+
+    public TaskTypes getTaskType() {
+        return TaskTypes.EPIC;
     }
 
     public List<Integer> getSubTaskIds() {
-        return new ArrayList<>(subTaskIds);
+        return subTaskIds;
     }
 
-    @Override
-    public String toString() {
-        return "Epic{id=" + getId() + ", title='" + getTitle() + "', description='" + getDescription() + "', status=" + getStatus() + "}";
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 }

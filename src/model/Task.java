@@ -1,26 +1,27 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Task {
     private int id;
     private String title;
     private String description;
     private Status status;
-    private final TaskTypes taskType;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(int id, String title, String description, Status status) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
-        this.taskType = TaskTypes.TASK;
     }
 
-    public Task(int id, String title, String description, Status status, TaskTypes taskType) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.taskType = taskType;
+    public Task(int id, String title, String description, Status status, Duration duration, LocalDateTime startTime) {
+        this(id, title, description, status);
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public int getId() {
@@ -55,12 +56,43 @@ public class Task {
         this.status = status;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null && duration != null) {
+            return startTime.plus(duration);
+        }
+        return null;
+    }
+
     public TaskTypes getTaskType() {
-        return taskType;
+        return TaskTypes.TASK;
     }
 
     @Override
     public String toString() {
-        return "Task{id=" + id + ", title='" + title + "', description='" + description + "', status=" + status + ", type=" + taskType + "}";
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
+                ", endTime=" + getEndTime() +
+                '}';
     }
 }

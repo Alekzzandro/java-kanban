@@ -24,14 +24,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (BufferedWriter bw = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             bw.write("id,type,name,status,description,epic");
             bw.newLine();
+
             for (Task task : getTasks()) {
                 bw.write(taskToString(task));
                 bw.newLine();
             }
+
             for (Epic epic : getEpics()) {
                 bw.write(taskToString(epic));
                 bw.newLine();
             }
+
             for (SubTask subTask : getSubTasks()) {
                 bw.write(taskToString(subTask));
                 bw.newLine();
@@ -42,7 +45,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String taskToString(Task task) {
-        String epicId = task.getTaskType() == TaskTypes.SUBTASK ? String.valueOf(((SubTask) task).getEpicId()) : "";
+        String epicId = task instanceof SubTask ? String.valueOf(((SubTask) task).getEpicId()) : "";
         return String.format("%d,%s,%s,%s,%s,%s",
                 task.getId(),
                 task.getTaskType().name(),
@@ -60,6 +63,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String title = fields[2];
             Status status = Status.valueOf(fields[3]);
             String description = fields[4];
+
             switch (type) {
                 case TASK:
                     return new Task(id, title, description, status);
@@ -67,7 +71,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     return new Epic(id, title, description, status);
                 case SUBTASK:
                     int epicId = Integer.parseInt(fields[5]);
-                    return new SubTask(id, title, description, epicId, status);
+                    return new SubTask(id, title, description, status, epicId);
                 default:
                     throw new IllegalArgumentException("Неизвестный тип задачи: " + type);
             }
@@ -84,6 +88,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 Task task = taskFromString(line);
+
                 if (task instanceof SubTask) {
                     addSubTaskToStorage((SubTask) task);
                 } else if (task instanceof Epic) {
@@ -91,8 +96,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 } else {
                     addTaskToStorage(task);
                 }
+
                 maxId = Math.max(maxId, task.getId());
             }
+
             setNextId(maxId + 1);
         } catch (IOException e) {
             throw new ManagerLoadFileException("Ошибка загрузки данных из файла", e);

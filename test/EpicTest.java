@@ -1,6 +1,5 @@
 import model.Epic;
 import model.Status;
-import model.SubTask;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,15 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class EpicTest {
 
     @Test
-    void testEpicCannotAddSelfAsSubTask() {
+    void testEpicCanAddValidSubTask() {
         Epic epic = new Epic(1, "Epic 1", "Description 1", Status.NEW);
 
-        SubTask subTask = new SubTask(1, "SubTask 1", "Description", epic.getId(), Status.NEW);
+        epic.addSubTask(2);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            epic.addSubTask(subTask.getId());
-        });
-
-        assertEquals("Эпик не может добавлять себя как подзадачу", exception.getMessage());
+        assertTrue(epic.getSubTaskIds().contains(2), "Подзадача не была добавлена.");
     }
 }

@@ -1,10 +1,7 @@
-import model.Epic;
-import model.Status;
-import model.SubTask;
-import model.Task;
-import model.TaskTypes;
+import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import service.InMemoryTaskManager;
 import service.TaskManager;
 
@@ -13,6 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
+
     private TaskManager taskManager;
 
     @BeforeEach
@@ -22,21 +20,23 @@ class InMemoryTaskManagerTest {
 
     @Test
     void testAddNewTask() throws Exception {
-        Task task = new Task(1, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
+        Task task = new Task(1, "Test Task", "Description", Status.NEW);
         taskManager.createTask(task);
 
         Task savedTask = taskManager.getTaskById(task.getId());
         assertNotNull(savedTask, "Задача не найдена.");
+
         assertEquals(task.getId(), savedTask.getId(), "ID задачи не совпадает.");
         assertEquals(task.getTitle(), savedTask.getTitle(), "Название задачи не совпадает.");
         assertEquals(task.getDescription(), savedTask.getDescription(), "Описание задачи не совпадает.");
         assertEquals(task.getStatus(), savedTask.getStatus(), "Статус задачи не совпадает.");
-        assertEquals(task.getTaskType(), savedTask.getTaskType(), "Тип задачи не совпадает.");
+
+        assertEquals(TaskTypes.TASK, savedTask.getTaskType(), "Тип задачи не совпадает.");
     }
 
     @Test
     void testTaskHistory() throws Exception {
-        Task task = new Task(5, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
+        Task task = new Task(5, "Test Task", "Description", Status.NEW);
         taskManager.createTask(task);
 
         taskManager.getTaskById(task.getId());
@@ -49,12 +49,13 @@ class InMemoryTaskManagerTest {
         assertEquals(task.getTitle(), historyTask.getTitle(), "Название задачи в истории не совпадает.");
         assertEquals(task.getDescription(), historyTask.getDescription(), "Описание задачи в истории не совпадает.");
         assertEquals(task.getStatus(), historyTask.getStatus(), "Статус задачи в истории не совпадает.");
-        assertEquals(task.getTaskType(), historyTask.getTaskType(), "Тип задачи в истории не совпадает.");
+
+        assertEquals(TaskTypes.TASK, historyTask.getTaskType(), "Тип задачи в истории не совпадает.");
     }
 
     @Test
     void testUpdateTaskStatus() throws Exception {
-        Task task = new Task(6, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
+        Task task = new Task(6, "Test Task", "Description", Status.NEW);
         taskManager.createTask(task);
 
         task.setStatus(Status.DONE);
@@ -68,7 +69,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void testDeleteTask() throws Exception {
-        Task task = new Task(7, "Test Task", "Description", Status.NEW, TaskTypes.TASK);
+        Task task = new Task(7, "Test Task", "Description", Status.NEW);
         taskManager.createTask(task);
 
         taskManager.deleteTask(task.getId());
@@ -79,9 +80,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void testDeleteAllTasks() throws Exception {
-        Task task1 = new Task(8, "Test Task 1", "Description 1", Status.NEW, TaskTypes.TASK);
-        Task task2 = new Task(9, "Test Task 2", "Description 2", Status.NEW, TaskTypes.TASK);
-
+        Task task1 = new Task(8, "Test Task 1", "Description 1", Status.NEW);
+        Task task2 = new Task(9, "Test Task 2", "Description 2", Status.NEW);
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
@@ -89,7 +89,6 @@ class InMemoryTaskManagerTest {
 
         Task deletedTask1 = taskManager.getTaskById(task1.getId());
         Task deletedTask2 = taskManager.getTaskById(task2.getId());
-
         assertNull(deletedTask1, "Первая задача не удалена.");
         assertNull(deletedTask2, "Вторая задача не удалена.");
     }
