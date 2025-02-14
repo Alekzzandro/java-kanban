@@ -1,6 +1,7 @@
 import model.*;
 import service.Managers;
 import service.TaskManager;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -39,22 +40,43 @@ public class Main {
             System.err.println("Ошибка при создании эпика: " + e.getMessage());
         }
 
-        SubTask subTask1 = new SubTask(4, "SubTask 1", "Description SubTask 1", Status.NEW, epic1.getId());
+        SubTask subTask1 = new SubTask(
+                4,
+                "SubTask 1",
+                "Description SubTask 1",
+                Status.NEW,
+                epic1.getId(),
+                Duration.ofMinutes(30),
+                now.plusHours(2)
+        );
 
-        try {
-            taskManager.createSubTask(subTask1);
-        } catch (ManagerLoadFileException e) {
-            System.err.println("Ошибка при создании подзадачи: " + e.getMessage());
+        if (taskManager.getEpicById(epic1.getId()) != null) {
+            try {
+                taskManager.createSubTask(subTask1);
+            } catch (ManagerLoadFileException e) {
+                System.err.println("Ошибка при создании подзадачи: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Эпик с ID " + epic1.getId() + " не найден. Подзадача не создана.");
         }
 
         printAllTasks(taskManager);
 
         printHistory(taskManager);
 
-        subTask1.setStatus(Status.DONE);
-        taskManager.updateSubTask(subTask1);
+        if (taskManager.getSubTaskById(subTask1.getId()) != null) {
+            subTask1.setStatus(Status.DONE);
+            taskManager.updateSubTask(subTask1);
 
-        System.out.println("Epic Status after updating subtask 1: " + taskManager.getEpicById(epic1.getId()).getStatus());
+            Epic fetchedEpic = taskManager.getEpicById(epic1.getId());
+            if (fetchedEpic != null) {
+                System.out.println("Epic Status after updating subtask 1: " + fetchedEpic.getStatus());
+            } else {
+                System.out.println("Epic not found");
+            }
+        } else {
+            System.out.println("SubTask with ID " + subTask1.getId() + " not found");
+        }
 
         printHistory(taskManager);
 
@@ -111,6 +133,7 @@ public class Main {
         for (Task task : taskManager.getTasks()) {
             System.out.println(task);
         }
+
         System.out.println("Эпики:");
         for (Epic epic : taskManager.getEpics()) {
             System.out.println(epic);
@@ -118,6 +141,7 @@ public class Main {
                 System.out.println("--> " + subTask);
             }
         }
+
         System.out.println("Подзадачи:");
         for (SubTask subTask : taskManager.getSubTasks()) {
             System.out.println(subTask);
