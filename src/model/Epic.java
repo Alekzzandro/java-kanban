@@ -12,6 +12,10 @@ public class Epic extends Task {
         super(id, title, description, status);
     }
 
+    public Epic() {
+
+    }
+
     public void setSubTaskIds(List<Integer> subTaskIds) {
         this.subTaskIds = subTaskIds;
     }
