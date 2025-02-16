@@ -7,6 +7,10 @@ import java.nio.file.Path;
 
 public class Managers {
 
+    public static TaskManager getInMemoryTaskManager() {
+        return new InMemoryTaskManager();
+    }
+
     public static TaskManager getFileBackedTaskManager(Path path) throws IOException, ManagerLoadFileException {
         return new FileBackedTaskManager(path);
     }
