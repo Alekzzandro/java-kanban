@@ -2,7 +2,6 @@ package service;
 
 import com.sun.net.httpserver.HttpExchange;
 import exception.NotFoundException;
-import model.Status;
 import model.Task;
 
 import com.google.gson.JsonSyntaxException;
