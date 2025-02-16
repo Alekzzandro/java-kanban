@@ -2,8 +2,8 @@ package service;
 
 import com.sun.net.httpserver.HttpExchange;
 import exception.NotFoundException;
-import model.SubTask;
 import model.Epic;
+import model.SubTask;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -82,7 +82,8 @@ public class SubTasksHandler extends BaseHttpHandler {
                     throw new IllegalArgumentException("Эпик с ID " + subTask.getEpicId() + " не найден");
                 }
                 taskManager.createSubTask(subTask);
-                HttpTaskServer.sendResponse(exchange, "", 201);
+                int newSubTaskId = subTask.getId();
+                HttpTaskServer.sendResponse(exchange, "{\"id\": " + newSubTaskId + "}", 201);
             } else {
                 if (!taskManager.updateSubTask(subTask)) {
                     throw new NotFoundException("Подзадача с ID " + subTask.getId() + " не найдена");

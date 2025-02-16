@@ -2,6 +2,7 @@ package service;
 
 import com.sun.net.httpserver.HttpExchange;
 import exception.NotFoundException;
+import model.Status;
 import model.Task;
 
 import com.google.gson.JsonSyntaxException;
@@ -77,7 +78,8 @@ public class TasksHandler extends BaseHttpHandler {
 
             if (task.getId() == 0) {
                 taskManager.createTask(task);
-                HttpTaskServer.sendResponse(exchange, "", 201);
+                int newTaskId = task.getId();
+                HttpTaskServer.sendResponse(exchange, "{\"id\": " + newTaskId + "}", 201);
             } else {
                 if (!taskManager.updateTask(task)) {
                     throw new NotFoundException("Задача с ID " + task.getId() + " не найдена");

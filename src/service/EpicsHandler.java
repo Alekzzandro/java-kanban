@@ -87,7 +87,8 @@ public class EpicsHandler extends BaseHttpHandler {
 
             if (epic.getId() == 0) {
                 taskManager.createEpic(epic);
-                HttpTaskServer.sendResponse(exchange, "", 201);
+                int newEpicId = epic.getId();
+                HttpTaskServer.sendResponse(exchange, "{\"id\": " + newEpicId + "}", 201);
             } else {
                 if (!taskManager.updateEpic(epic)) {
                     throw new NotFoundException("Эпик с ID " + epic.getId() + " не найден");
